@@ -1,0 +1,15 @@
+title: Kazu Utilities
+email: logan.jones153@gmail.com
+description: >
+  A simple website for hosting some of Katie's utilities
+baseurl: ""
+url: "http://localhost:4000"
+twitter_username: loganasherjones
+github_username:  l-jones
+
+# Build settings
+sass:
+  sass_dir: _sass
+include: ['_pages']
+kramdown:
+  input: GFM
