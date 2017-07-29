@@ -1,0 +1,99 @@
+---
+layout: page
+title: Melting Calculator
+short_description: Convert DNA sequences into melting temperatures
+permalink: /calc/
+---
+
+<div class="row">
+  <div class="col">
+    <p>
+      This page can be used to convert a DNA sequence into the correct
+      temperature for melting the DNA sequence. Simply copy and paste your DNA
+      sequence into this form and hit the convert button.
+    </p>
+    <div class="row">
+      <div class="col">
+        <form id="dnaForm">
+          <div class="form-group">
+            <label for="sequence">DNA Sequence</label>
+            <input type="text"
+                   pattern="[actgACTG]+"
+                   class="form-control"
+                   placeholder="DNA sequence"
+                   title="Valid DNA sequence (only letters a,c,t,g are allowed)"
+                   id="sequence"
+                   required
+                   aria-describedby="sequenceHelp" />
+            <small id="sequenceHelp" class="form-text text-muted">A valid DNA sequence (containing only the ACTG characters)</small>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="row">
+      <div class="col">
+        <div class="table-outer">
+          <table class="table table-striped" id="resultTable">
+            <thead class="thead-inverse">
+              <tr>
+                <th>Melting Temperature</th>
+                <th>Annealing Temperature</th>
+                <th>Sequence</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(function() {
+  var dnaValueMap = {
+    'a': 2, 'A': 2,
+    'g': 4, 'G': 4,
+    'c': 4, 'C': 4,
+    't': 2, 'T': 2
+  }
+
+  var calculateTemp = function(sequence) {
+    var meltingTemperature = 0;
+    for(var i =0; i < sequence.length; i++) {
+      meltingTemperature += dnaValueMap[sequence[i]];
+    }
+    return meltingTemperature;
+  }
+
+  var insertCell = function(row, index, value) {
+    var newCell = $('<td>')
+    if (index < 2) {
+      newCell.attr("align", "left")
+    }
+    newCell.text(value)
+    row.append(newCell);
+  }
+
+  var addToTable = function(sequence, meltingTemperature, annealingTemp) {
+    var newRow = $('<tr>')
+    var elements = [meltingTemperature, annealingTemp, sequence];
+    for(var i=0; i < elements.length; i++) {
+      insertCell(newRow, i, elements[i]);
+    }
+
+    var tableRef = $("#tableBody").append(newRow);
+  }
+
+  $('#dnaForm').on('submit', function(e) {
+    e.preventDefault();
+    $('#resultTable').show();
+    sequence = $('#sequence').val();
+    meltingTemperature = calculateTemp(sequence)
+    addToTable(sequence, meltingTemperature, meltingTemperature-5)
+  })
+});
+</script>
