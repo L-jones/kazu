@@ -1,0 +1,98 @@
+---
+layout: page
+title: Hashtag Randomizer
+short_description: Create random assortments of hashtags
+permalink: /hashtag/
+---
+
+<div class="row">
+    <div class="col">
+        <p>
+            Enter your hashtags, and the number of hashtags you desire, this
+            will provide you a random hashtags list of what you put in before.
+            Just click the Generate and Copy button and it will copy it to
+            your clipboard for easy pasting.
+        </p>
+        <div class="row">
+            <div class="col">
+                <form id="hashTagForm">
+                    <div class="form-group">
+                        <label for="hashtags">Hash tags</label>
+                        <input type="text" class="form-control" placeholder="#pictures #logan" title="Hashtags:" id="hashtags"
+                            value="#foo #bar #baz #bat #asdf #qwer #zxcv" required aria-describedby="hashtagHelp" />
+                        <small id="hashtagHelp" class="form-text text-muted">Hashtags</small>
+                        <label for="numTags">Number of hashtags</label>
+                        <input type="text" class="form-control" placeholder="30" value="3" title="Number of Hashtags"
+                            id="numTags" required aria-describedby="numTagsHelp">
+                        <small id="numTagsHelp" class="form-text text-muted">How many hashtags to include</small>
+                    </div>
+                    <button id="genButton" type="submit" class="btn btn-primary" data-toggle="tooltip" data-placment="auto"
+                        title="Copy to Clipboard">Generate and Copy</button>
+                </form>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <textarea id="randomTags" class="form-control"></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    $(function () {
+        var getHashtagErrors = function (hashtags) {
+            var errors = []
+            for (let tag of hashtags) {
+                if (!tag.startsWith('#')) {
+                    errors.push(tag)
+                }
+            }
+            return errors
+        }
+
+        var getRandomTags = function (numTags, hashtags) {
+            var shuffled = hashtags.slice(0), i = hashtags.length, temp, index;
+            while (i--) {
+                index = Math.floor((i + 1) * Math.random());
+                temp = shuffled[index];
+                shuffled[index] = shuffled[i];
+                shuffled[i] = temp;
+            }
+            return shuffled.slice(0, numTags);
+        }
+
+        var getHashtags = function () {
+            var hashString = $('#hashtags').val();
+            return hashString.split(/(\s+)/).filter(function (e) { return e.trim().length > 0 });
+        }
+
+        $('#hashTagForm').on('submit', function (e) {
+            e.preventDefault();
+            var numTags = parseInt($('#numTags').val());
+            var hashtags = getHashtags();
+            var errors = getHashtagErrors(hashtags);
+
+            if (errors.length > 0) {
+                console.error('Show invalid hashtag error');
+                return;
+            } else if (hashtags.length < numTags) {
+                console.error('Show invalid number error');
+                return;
+            }
+
+            var randomTags = getRandomTags(numTags, hashtags);
+            $('#randomTags').val(randomTags.join(' '));
+            $('#randomTags').select();
+            document.execCommand('copy');
+            $('#genButton').tooltip('hide')
+                .attr('data-original-title', 'Copied!')
+                .tooltip('show');
+        });
+    });
+</script>
